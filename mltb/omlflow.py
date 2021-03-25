@@ -241,7 +241,7 @@ class OptunaMLflow(object):
         """
         value = str(value)  # make sure it is a string
         if len(value) > self._max_tag_length:
-            value = textwrap.shorten(value, self._max_tag_length)
+            value = value[: (self._max_tag_length - 5)] + "[...]"
         if optuna_log:
             self._trial.set_user_attr(key, value)
         _logger.info(f"Tag: {key}: {value}")
@@ -266,7 +266,7 @@ class OptunaMLflow(object):
         for key, value in tags.items():
             value = str(value)  # make sure it is a string
             if len(value) > self._max_tag_length:
-                tags[key] = textwrap.shorten(value, self._max_tag_length)
+                value = value[: (self._max_tag_length - 5)] + "[...]"
             if optuna_log:
                 self._trial.set_user_attr(key, value)
             _logger.info(f"Tag: {key}: {value}")
