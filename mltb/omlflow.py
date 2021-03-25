@@ -59,7 +59,11 @@ class OptunaMLflow(object):
         self._tracking_uri = tracking_uri
         self._num_name_digits = num_name_digits
         self._enforce_clean_git = enforce_clean_git
-        self._max_mlflow_tag_length = 5000
+
+        # MLflow allows 5000
+        # Optuna only 2048
+        self._max_tag_length = 2048
+
         self._iter_metrics = {}
         self._next_iter_num = 0
         self._hostname = None
@@ -232,12 +236,12 @@ class OptunaMLflow(object):
             optuna_log (bool, optional): Internal parameter that should be ignored by the API user.
                 Defaults to True.
         """
+        value = str(value)  # make sure it is a string
+        if len(value) > self._max_tag_length:
+            value = textwrap.shorten(value, self._max_tag_length)
         if optuna_log:
             self._trial.set_user_attr(key, value)
         _logger.info(f"Tag: {key}: {value}")
-        value = str(value)  # make sure it is a string
-        if len(value) > self._max_mlflow_tag_length:
-            value = textwrap.shorten(value, self._max_mlflow_tag_length)
         try:
             mlflow.set_tag(normalize_mlflow_entry_name(key), value)
         except Exception as e:
@@ -257,12 +261,12 @@ class OptunaMLflow(object):
                 Defaults to True.
         """
         for key, value in tags.items():
+            value = str(value)  # make sure it is a string
+            if len(value) > self._max_tag_length:
+                tags[key] = textwrap.shorten(value, self._max_tag_length)
             if optuna_log:
                 self._trial.set_user_attr(key, value)
             _logger.info(f"Tag: {key}: {value}")
-            value = str(value)  # make sure it is a string
-            if len(value) > self._max_mlflow_tag_length:
-                tags[key] = textwrap.shorten(value, self._max_mlflow_tag_length)
         try:
             mlflow.set_tags(normalize_mlflow_entry_names_in_dict(tags))
         except Exception as e:
