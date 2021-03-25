@@ -64,8 +64,6 @@ class OptunaMLflow(object):
         # Optuna only 2048
         self._max_tag_length = 2048
 
-        self._iter_metrics = {}
-        self._next_iter_num = 0
         self._hostname = None
         self._optuna_result_name = optuna_result_name
 
@@ -77,7 +75,12 @@ class OptunaMLflow(object):
             Args:
                 trial ([``optuna.trial.Trial``]): The optuna trial to use.
             """
+
+            # we must do this here and not in __init__
+            # __init__ is only called once when decorator is applied
             self._trial = trial
+            self._iter_metrics = {}
+            self._next_iter_num = 0
 
             # check if GIT repo is clean
             if self._enforce_clean_git:
