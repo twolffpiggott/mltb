@@ -62,7 +62,7 @@ class OptunaMLflow(object):
 
         # MLflow allows 5000
         # Optuna only 2048
-        self._max_tag_length = 2048
+        self._max_tag_length = 2040
 
         self._hostname = None
         self._optuna_result_name = optuna_result_name
